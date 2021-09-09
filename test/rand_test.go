@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"gotool/rand"
+	"go-toolkit/rand"
 	"testing"
 )
 
@@ -15,4 +15,3 @@ func TestRand(t *testing.T) {
 	}
 	fmt.Println(parserString.ToString())
 }
-
