@@ -222,7 +222,7 @@ func (b *ChannelMemoryBackend) Stop() {
 }
 
 // Log implements the Log method required by Backend.
-func (b *ChannelMemoryBackend) Log(level Level, calldepth int, rec *Record) error {
+func (b *ChannelMemoryBackend) Log(level Level, _ int, rec *Record) error {
 	b.incoming <- rec
 	return nil
 }

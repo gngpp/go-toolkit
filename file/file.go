@@ -73,3 +73,63 @@ func Read(filename string) (string, error) {
 	file, err := ioutil.ReadFile(filename)
 	return string(file), err
 }
+
+func Create(first string, more ...string) error {
+	absPath := first
+	for i := range more {
+		if !strings.HasPrefix(more[i], "/") {
+			more[i] = "/" + more[i]
+		}
+		absPath += more[i]
+	}
+	if !Exist(absPath) {
+		err := MakeDirByFile(absPath)
+		if err != nil {
+			return err
+		}
+	}
+	_, err := os.Create(absPath)
+	return err
+}
+
+// DelFile  removes path and any children it contains.
+func DelFile(absPath string) error {
+	return os.RemoveAll(absPath)
+}
+
+func GetPathDirs(absPath string) ([]string, error) {
+	dirs := make([]string, 0)
+	if Exist(absPath) {
+		dir, err := ioutil.ReadDir(absPath)
+		if err != nil {
+			return nil, err
+		}
+		for _, f := range dir {
+			if f.IsDir() {
+				dirs = append(dirs, f.Name())
+			}
+		}
+	}
+	return dirs, nil
+}
+
+func GetCurrentDirectory() string {
+	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	return strings.Replace(dir, "\\", "/", -1)
+}
+
+func FormatFileSize(fileSize int64) (size string) {
+	if fileSize < 1024 {
+		return fmt.Sprintf("%.2f B", float64(fileSize)/float64(1))
+	} else if fileSize < (1024 * 1024) {
+		return fmt.Sprintf("%.2f KiB", float64(fileSize)/float64(1024))
+	} else if fileSize < (1024 * 1024 * 1024) {
+		return fmt.Sprintf("%.2f MiB", float64(fileSize)/float64(1024*1024))
+	} else if fileSize < (1024 * 1024 * 1024 * 1024) {
+		return fmt.Sprintf("%.2f GiB", float64(fileSize)/float64(1024*1024*1024))
+	} else if fileSize < (1024 * 1024 * 1024 * 1024 * 1024) {
+		return fmt.Sprintf("%.2f TiB", float64(fileSize)/float64(1024*1024*1024*1024))
+	} else { //if fileSize < (1024 * 1024 * 1024 * 1024 * 1024 * 1024)
+		return fmt.Sprintf("%.2f PiB", float64(fileSize)/float64(1024*1024*1024*1024*1024))
+	}
+}
